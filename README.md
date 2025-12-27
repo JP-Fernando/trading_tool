@@ -8,15 +8,17 @@ Este proyecto es un **bot de trading en Python** que permite:
 
 ---
 
-## Estructura del proyecto
 
+## Estructura del Proyecto
+
+```text
 trading_tool/
-├── engine.py # Motor de trading (fetch de datos, indicadores, señales, backtest)
-├── monitor.py # Monitor para escuchar datos y generar señales en tiempo real
-├── research.ipynb # Notebook para experimentación y optimización de estrategias
-├── requirements.txt # Dependencias del proyecto
-└── README.md # Documentación
-
+├── engine.py          # Motor de trading (fetch de datos, indicadores, señales, backtest)
+├── monitor.py         # Monitor para escuchar datos y generar señales en tiempo real
+├── research.ipynb     # Notebook para experimentación y optimización de estrategias
+├── requirements.txt   # Dependencias del proyecto
+└── README.md          # Documentación
+```
 
 ---
 
@@ -24,17 +26,19 @@ trading_tool/
 
 1. Clonar el repositorio:
     ```bash
-        git clone https://github.com/tuusuario/trading_tool.git
-        cd trading_tool
+    git clone https://github.com/tuusuario/trading_tool.git
+    cd trading_tool
     ```
+
 2. Crear entorno con Anaconda (opcional pero recomendado):
     ```bash
-        conda create -n trading_tool python=3.11
-        conda activate trading_tool
+    conda create -n trading_tool python=3.11
+    conda activate trading_tool
     ```
+
 3. Instalar dependencias:
     ```bash
-        pip install -r requirements.txt
+    pip install -r requirements.txt
     ```
 
 ---
