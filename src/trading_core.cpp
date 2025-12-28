@@ -1,12 +1,4 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <vector>
-#include <limits>
-#include <algorithm> 
-#include <numeric>
-#include <tuple>
-
-namespace py = pybind11;
+#include "trading_core.h"
 
 
 py::array_t<double> calculate_sma_cpp(const py::array_t<double>& input_data, const int& window) {
