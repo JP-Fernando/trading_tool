@@ -232,6 +232,31 @@ calculate_macd_cpp(const py::array_t<double>& input_data,
     return std::make_tuple(macd_line_arr, signal_line_arr);
 }
 
+int check_signals_cpp(const py::array_t<double>& rsi, 
+                      const py::array_t<double>& price,
+                      const py::array_t<double>& bb_upper, 
+                      const py::array_t<double>& bb_lower) {
+    
+    auto r = rsi.unchecked<1>();
+    auto p = price.unchecked<1>();
+    auto up = bb_upper.unchecked<1>();
+    auto lo = bb_lower.unchecked<1>();
+    
+    size_t last = r.shape(0) - 1;
+
+    // Buy if price below lower band
+    if (r(last) < 30 && p(last) < lo(last)) {
+        return 1; // BUY
+    }
+    // Sell if price above upper band
+    else if (r(last) > 70 && p(last) > up(last)) {
+        return -1; // SELL
+    }
+    
+    return 0; // HOLD
+}
+
+
 
 PYBIND11_MODULE(trading_core, m) {
     m.def("calculate_sma", &calculate_sma_cpp, "High performance SMA calculation");
@@ -239,4 +264,5 @@ PYBIND11_MODULE(trading_core, m) {
     m.def("calculate_rsi", &calculate_rsi_cpp, "High performance RSI calculation");
     m.def("calculate_macd", &calculate_macd_cpp, "High performance MACD calculation");
     m.def("calculate_bollinger_bands", &calculate_bollinger_bands_cpp, "BB calculation");
+    m.def("check_signals", &check_signals_cpp, "Detect trading signals");
 }

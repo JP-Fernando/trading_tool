@@ -26,5 +26,10 @@ calculate_macd_cpp(const py::array_t<double>& input_data,
                    const int& slow_period, 
                    const int& signal_period);
 
+int check_signals_cpp(const py::array_t<double>& rsi, 
+    const py::array_t<double>& price,
+    const py::array_t<double>& bb_upper, 
+    const py::array_t<double>& bb_lower);
+                   
 
 #endif
