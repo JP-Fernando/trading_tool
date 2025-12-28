@@ -9,9 +9,9 @@ class TradingEngine:
 
     def fetch_data(self, timeframe='1h', limit=100):
         """Fetches historical OHLCV data.
-        timeframe: Timeframe for OHLCV data (e.g., '1h', '15m')
-        limit: Number of data points to fetch
-        Returns a DataFrame with OHLCV data.
+        :param timeframe: Timeframe for OHLCV data (e.g., '1h', '15m')
+        :param limit: Number of data points to fetch
+        :returns: A DataFrame with OHLCV data.
         """
         bars = self.exchange.fetch_ohlcv(self.symbol, timeframe=timeframe, limit=limit)
         df = pd.DataFrame(bars, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
@@ -20,15 +20,15 @@ class TradingEngine:
 
     def add_indicators(self, df, sma_window=20, ema_window=None, rsi_window=None, macd_fast=12, macd_slow=26, macd_signal=9, bb_window=None):
         """Computes a number of indicators.
-        df: DataFrame with OHLCV data
-        sma_window: Window for Simple Moving Average
-        ema_window: Window for Exponential Moving Average
-        rsi_window: Window for Relative Strength Index
-        macd_fast: Fast period for MACD
-        macd_slow: Slow period for MACD
-        macd_signal: Signal period for MACD
-        bb_window: Window for Bollinger Bands
-        Returns the DataFrame with new indicator columns.
+        :param df: DataFrame with OHLCV data
+        :param sma_window: Window for Simple Moving Average
+        :param ema_window: Window for Exponential Moving Average
+        :param rsi_window: Window for Relative Strength Index
+        :param macd_fast: Fast period for MACD
+        :param macd_slow: Slow period for MACD
+        :param macd_signal: Signal period for MACD
+        :param bb_window: Window for Bollinger Bands
+        :returns: DataFrame with new indicator columns.
         """
 
         # Simple Moving Average
@@ -59,14 +59,14 @@ class TradingEngine:
 
     def get_signals(self, df, sma_window=10, ema_window=None, rsi_overbought=60, rsi_oversold=50, use_macd=False, use_bbands=False):
         """Generates composite signals based on optional indicators.
-        df: DataFrame with OHLCV data and indicators
-        sma_window: Window for Simple Moving Average
-        ema_window: Window for Exponential Moving Average
-        rsi_overbought: RSI threshold for overbought condition
-        rsi_oversold: RSI threshold for oversold condition
-        use_macd: Whether to use MACD signals
-        use_bbands: Whether to use Bollinger Bands signals
-        Returns the DataFrame with a new 'Signal' column.
+        :param df: DataFrame with OHLCV data and indicators
+        :param sma_window: Window for Simple Moving Average
+        :param ema_window: Window for Exponential Moving Average
+        :param rsi_overbought: RSI threshold for overbought condition
+        :param rsi_oversold: RSI threshold for oversold condition
+        :param use_macd: Whether to use MACD signals
+        :param use_bbands: Whether to use Bollinger Bands signals
+        :returns: DataFrame with a new 'Signal' column.
         1 for Buy, -1 for Sell, 0 for Hold
         """
         col_sma = f'SMA_{sma_window}' if sma_window else None
@@ -109,9 +109,9 @@ class TradingEngine:
     def run_backtest(self, df, initial_balance=1000.0):
         """
         Simulates trading based on signals and calculates returns.
-        df: DataFrame with OHLCV data and signals
-        initial_balance: Starting capital for the backtest
-        Returns a dictionary with performance metrics.
+        :param df: DataFrame with OHLCV data and signals
+        :param initial_balance: Starting capital for the backtest
+        :returns: a dictionary with performance metrics.
         """
         # 1. Ensure we have signals
         if 'Signal' not in df.columns:
