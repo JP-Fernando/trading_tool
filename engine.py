@@ -1,10 +1,19 @@
 import ccxt
 import pandas as pd
 import ta
+import os
+import datetime
 
 class TradingEngine:
-    def __init__(self, symbol='BTC/USDT'):
-        self.exchange = ccxt.binance()
+    def __init__(self, symbol='BTC/USDT', api_key = None, api_secret = None):
+        # Using enableRateLimit is essential for production bots
+        self.exchange = ccxt.binance({
+            'apiKey': api_key,
+            'secret': api_secret,
+            'enableRateLimit': True,
+            'options': {'defaultType': 'spot'}
+        })
+        self.exchange.set_sandbox_mode(True) # Uncomment for Testnet / Paper trading
         self.symbol = symbol
 
     def fetch_data(self, timeframe='1h', limit=100):
@@ -145,3 +154,30 @@ class TradingEngine:
             'total_return_pct': round(total_return_pct, 2),
             'df': df
         }
+    
+    def log_status(self, current_price, current_signal, unrealized_pnl, cumulative_pnl, is_open):
+        """Standardised logging method to keep monitor.py clean.
+        :param current_price: Current price.
+        :param current_signal: Current signal.
+        :param unrealized_pnl: Unrealised PnL.
+        :param cumulative_pnl: Cumulative PnL.
+        :param is_open: Whether position is open.
+        """
+        log_dir = "logs"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+
+        safe_symbol = self.symbol.replace("/", "-")
+        filename = f"{log_dir}/{safe_symbol}_{datetime.datetime.now().strftime('%Y%m%d')}.csv"
+        
+        log_entry = {
+            'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'price': current_price,
+            'signal': current_signal,
+            'unrealized_pnl_pct': round(unrealized_pnl * 100, 4),
+            'cumulative_pnl_pct': round(cumulative_pnl * 100, 4),
+            'is_open': int(is_open) # Convert boolean to int for better CSV compatibility
+        }
+
+        log_df = pd.DataFrame([log_entry])
+        log_df.to_csv(filename, mode='a', index=False, header=not os.path.isfile(filename))
