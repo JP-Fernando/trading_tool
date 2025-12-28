@@ -21,12 +21,9 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<double>>
 calculate_bollinger_bands_cpp(const py::array_t<double>& input_data, const int& window, const double& k);
 
 std::tuple<py::array_t<double>, py::array_t<double>> 
-calculate_macd_cpp(const py::array_t<double>& input_data, 
-                   const int& fast_period, 
-                   const int& slow_period, 
-                   const int& signal_period);
+calculate_macd_cpp(const py::array_t<double>& input_data, const int& fast, const int& slow, const int& signal);
 
-int check_signals_cpp(const py::array_t<double>& rsi, 
+    int check_signals_cpp(const py::array_t<double>& rsi, 
     const py::array_t<double>& price,
     const py::array_t<double>& bb_upper, 
     const py::array_t<double>& bb_lower);
