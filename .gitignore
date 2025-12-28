@@ -69,3 +69,21 @@ logs/
 
 # Windows
 Thumbs.db
+
+# C++ Compilation Artifacts
+*.o
+*.obj
+*.pyd
+*.out
+
+# Shared Libraries (Generic)
+*.dll
+*.dylib
+
+# Specific to trading_core
+_trading_core*
+src/build/
+
+# IDE and Project specific
+*.swp
+.python-version

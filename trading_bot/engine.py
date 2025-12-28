@@ -1,8 +1,10 @@
 import ccxt
 import pandas as pd
+import numpy as np
 import ta
 import os
 import datetime
+from trading_bot import trading_core
 
 class TradingEngine:
     def __init__(self, symbol='BTC/USDT', api_key = None, api_secret = None):
@@ -27,7 +29,8 @@ class TradingEngine:
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
         return df
 
-    def add_indicators(self, df, sma_window=20, ema_window=None, rsi_window=None, macd_fast=12, macd_slow=26, macd_signal=9, bb_window=None):
+    def add_indicators(self, df, sma_window=20, ema_window=None, rsi_window=None,
+                        macd_fast=12, macd_slow=26, macd_signal=9, bb_window=None):
         """Computes a number of indicators.
         :param df: DataFrame with OHLCV data
         :param sma_window: Window for Simple Moving Average
@@ -40,29 +43,41 @@ class TradingEngine:
         :returns: DataFrame with new indicator columns.
         """
 
+        
+        # Guard clause: ensure we have enough data
+        max_period = max(filter(None, [sma_window, ema_window, rsi_window, macd_slow, bb_window]))
+        if len(df) < max_period:
+            return df
+        
+        # C++ interoperability: get numpy array as float64 array
+        close_prices = np.ascontiguousarray(df['close'].values.astype(np.float64))
+
         # Simple Moving Average
         if sma_window:
-            df[f'SMA_{sma_window}'] = df['close'].rolling(window=sma_window).mean()
+            df[f'SMA_{sma_window}'] = trading_core.calculate_sma(close_prices, sma_window)
 
         # Exponential Moving Average
         if ema_window:
-            df[f'EMA_{ema_window}'] = df['close'].ewm(span=ema_window, adjust=False).mean()
+            df[f'EMA_{ema_window}'] = trading_core.calculate_ema(close_prices, ema_window)
 
         # Relative Strength Index
         if rsi_window:
-            df['RSI'] = ta.momentum.RSIIndicator(df['close'], window=rsi_window).rsi()
+            df['RSI'] = trading_core.calculate_rsi(close_prices, rsi_window)
 
         # Moving Average Convergence Divergence
-        if macd_fast and macd_slow and macd_signal:
-            macd_indicator = ta.trend.MACD(df['close'], window_fast=macd_fast, window_slow=macd_slow, window_sign=macd_signal)
-            df['MACD'] = macd_indicator.macd()
-            df['MACD_Signal'] = macd_indicator.macd_signal()
-
+        if all([macd_fast, macd_slow, macd_signal]):
+            macd_line, signal_line = trading_core.calculate_macd(
+                close_prices, macd_fast, macd_slow, macd_signal
+            )
+            df['MACD'] = macd_line
+            df['MACD_Signal'] = signal_line
+        
         # Bollinger Bands
         if bb_window:
-            bb_indicator = ta.volatility.BollingerBands(df['close'], window=bb_window, window_dev=2)
-            df['BB_High'] = bb_indicator.bollinger_hband()
-            df['BB_Low'] = bb_indicator.bollinger_lband()
+            upper, mid, lower = trading_core.calculate_bollinger_bands(close_prices, bb_window, 2.0)
+            df['BB_High'] = upper
+            df['BB_Mid'] = mid  
+            df['BB_Low'] = lower           
 
         return df
 

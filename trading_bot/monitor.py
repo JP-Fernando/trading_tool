@@ -2,6 +2,7 @@ import time
 import datetime
 import pandas as pd
 from engine import TradingEngine
+from trading_bot import trading_core
 
 def run_monitor(symbol='BTC/USDT', timeframe='1h', interval=60):
     # Initialize the engine

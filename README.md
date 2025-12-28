@@ -1,44 +1,61 @@
-# Trading Tool con Python
+# Trading Tool con Python y C++20
 
-Este proyecto es un **bot de trading en Python** que permite:
-- Descargar datos históricos de criptomonedas usando **ccxt**.
-- Calcular indicadores técnicos (SMA) y generar señales de compra/venta.
-- Realizar **backtesting** de estrategias simples.
-- Visualizar resultados y optimizar parámetros de la estrategia.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![C++ 20](https://img.shields.io/badge/C++-20-red.svg)](https://en.cppreference.com/w/cpp/20)
+
+Este proyecto es un **motor de trading híbrido** diseñado para ofrecer máxima eficiencia. 
+Combina la flexibilidad de **Python** para la gestión de datos y estrategias con un núcleo 
+de **C++20** altamente optimizado para el cálculo de indicadores técnicos.
 
 ---
 
+## 🚀 Características Principales
+
+* **C++20 Core:** Cálculo de indicadores (SMA, EMA, RSI, MACD, Bollinger Bands) 
+implementado con algoritmos de una sola pasada (*single-pass*) y punteros crudos para evitar latencia.
+* **Ganancia Real:** Rendimiento hasta **5x superior** a las implementaciones estándar basadas puramente en Python/Pandas.
+* **Interoperabilidad:** Integración fluida mediante `pybind11`, permitiendo el paso de arrays de NumPy sin copias innecesarias.
+* **Estructura Profesional:** Arquitectura modular lista para escalado a trading de alta frecuencia (HFT).
+
+---
 
 ## Estructura del Proyecto
 
 ```text
 trading_tool/
-├── engine.py          # Motor de trading (fetch de datos, indicadores, señales, backtest)
-├── monitor.py         # Monitor para escuchar datos y generar señales en tiempo real
-├── research.ipynb     # Notebook para experimentación y optimización de estrategias
-├── requirements.txt   # Dependencias del proyecto
-└── README.md          # Documentación
+├── src/
+│   └── trading_core.cpp    # Implementación C++ de indicadores (SMA, EMA, RSI, etc.)
+├── trading_bot/
+│   ├── __init__.py
+│   ├── engine.py           # Clase TradingEngine (Lógica principal)
+│   └── monitor.py          # Script de monitoreo en tiempo real
+├── notebooks/
+│   └── benchmark.ipynb     # Comparativa de rendimiento Python vs C++
+├── setup.py                # Configuración de compilación de la extensión C++
+├── requirements.txt        # Dependencias de Python
+└── README.md
 ```
 
 ---
 
-## Instalación
+## Instalación y Compilación
 
+### Requisitos previos
+* Compilador C++ compatible con el estándar **C++20** (GCC 10+, Clang 10+ o MSVC 2019+).
+* Python 3.10 o superior.
+
+### Pasos
 1. Clonar el repositorio:
     ```bash
-    git clone https://github.com/tuusuario/trading_tool.git
+    git clone https://github.com/JP-Fernando/trading_tool.git
     cd trading_tool
     ```
 
-2. Crear entorno con Anaconda (opcional pero recomendado):
+2. Instalar y compilar:
     ```bash
-    conda create -n trading_tool python=3.11
-    conda activate trading_tool
-    ```
-
-3. Instalar dependencias:
-    ```bash
-    pip install -r requirements.txt
+    pip install -e .
     ```
 
 ---
@@ -50,34 +67,53 @@ trading_tool/
 Ejemplo en `research.ipynb`:
 
 ```python
-from engine import TradingEngine
+from trading_bot.engine import TradingEngine
 
-bot = TradingEngine()
-df = bot.fetch_data(timeframe='1h', limit=500)
-df = bot.add_indicators(df)
-df = bot.get_signals(df)
+# Inicializar motor
+engine = TradingEngine()
 
-results = bot.run_backtest(df, initial_balance=1000)
-print(f"Total Return: {results['total_return_pct']}%")
+# Obtener datos de mercado
+df = engine.fetch_data(symbol='BTC/USDT', timeframe='1h')
+
+# Calcular indicadores (SMA, EMA, RSI, MACD, BB) en el Core de C++
+df = engine.add_indicators(
+    df, 
+    sma_window=20, 
+    rsi_window=14, 
+    bb_window=20,
+    macd_fast=12,
+    macd_slow=26
+)
+
+print(df.tail())
 ```
 
-### Monitor de señales
 
-```bash
-python monitor.py
-```
+---
 
-Esto imprimirá en consola las últimas señales generadas para el símbolo configurado.
+## Roadmap
+- [ ] **WebSockets Integration:** Soporte para streaming de datos en tiempo real.
+- [ ] **Advanced Indicators:** Implementación de Ichimoku Cloud y ADX en C++.
+- [ ] **Backtesting Engine:** Motor de ejecución de órdenes simuladas con gestión de slippage.
+- [ ] **ML Integration:** Conexión con modelos de PyTorch para predicción de señales.
 
-### Optimización de parámetros
+--- 
 
-Puedes probar distintas ventanas de SMA para encontrar la que maximice tu retorno:
+## Licencia
 
-```python
-ventanas = [5, 10, 20, 50, 100, 200]
-# Ejecutar optimización en research.ipynb
-```
+MIT License - Uso libre para fines educativos y comerciales.
 
-## Advertencia
+---
+
+## Descargo de responsabilidad (Disclaimer)
+
 Este bot **no opera con dinero real**. Solo realiza backtesting y simulaciones. 
-Para trading real, usar Binance Testnet y probar cuidadosamente.
+Sus fines son plenamente educativos.
+
+**No utilices este bot con capital real** sin realizar antes pruebas
+exhaustivas en entornos de simulación (`Testnet`).
+Aun así, esta herramienta se ofrece **sin garantías** y el autor no 
+se hace responsable de su uso por terceros.
+
+El trading financiero conlleva un riesgo significativo de pérdida de capital.
+**Invierte solo el capital que estés dispuesto a perder.**
