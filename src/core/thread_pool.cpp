@@ -1,4 +1,4 @@
-#include "thread_pool.h"
+#include "core/thread_pool.h"
 
 /// @brief Constructor
 ThreadPool::ThreadPool(size_t num_threads) : stop_flag(false)

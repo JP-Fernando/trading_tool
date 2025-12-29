@@ -3,11 +3,20 @@ import pybind11
 
 cpp_extension = Extension(
     'trading_bot.trading_core',
-    sources=['src/trading_core.cpp',
-             "src/thread_pool.cpp",
-             "src/market_manager.cpp",
-             "src/indicators.cpp"],
-    include_dirs=[pybind11.get_include(), 'include'],
+    sources=[
+        "src/bindings.cpp",
+        "src/core/indicators.cpp",
+        "src/core/market_manager.cpp",
+        "src/core/thread_pool.cpp",
+        "src/core/trading_core.cpp",
+        "src/utils/logger.cpp"
+    ],
+    include_dirs=[
+        pybind11.get_include(), 
+        "include",
+        "include/core",
+        "include/utils"
+        ],
     language='c++',
     extra_compile_args=['-std=c++20', '-O3', '-fPIC'],
 )

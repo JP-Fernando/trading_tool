@@ -1,4 +1,4 @@
-#include "indicators.h"
+#include "core/indicators.h"
 
 /// @brief Calculates the Simple Moving Average (SMA) of the input data over a specified window.
 std::vector<double> compute_sma(const std::vector<double>& input, const int& window) {

@@ -1,4 +1,5 @@
-#include "market_manager.h"
+#include "core/market_manager.h"
+#include "utils/logger.h"
 #include <iostream>
 #include <cstdio>
 
@@ -62,10 +63,11 @@ void MarketManager::process_symbol(std::string symbol, double price)
 
         if (signal != 0)
         {
-            // Thread-safe console output using printf
-            const char *action = (signal == 1) ? "\033[92mBUY\033[0m" : "\033[91mSELL\033[0m";
-            std::printf("[CORE] %-10s | Price: %10.2f | Signal: %s\n",
-                        symbol.c_str(), prices_snapshot.back(), action);
+            std::string action = (signal == 1) ? "BUY" : "SELL";
+            std::string msg = "Symbol: " + symbol +
+                              " | Price: " + std::to_string(prices_snapshot.back()) +
+                              " | Action: " + action;
+            Logger::log(LogLevel::SIGNAL, msg);
         }
     }
 }

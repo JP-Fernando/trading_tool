@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <shared_mutex>
-#include "thread_pool.h"
-#include "indicators.h"
+#include "core/thread_pool.h"
+#include "core/indicators.h"
 
 /// @brief Asset data: vector of prices
 struct AssetData {
