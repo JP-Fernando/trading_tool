@@ -83,6 +83,7 @@ El proyecto utiliza `pytest` para asegurar la estabilidad de la integración C++
 ```bash
 pytest tests/
 ```
+
 ---
 
 ### Uso del Monitor en Tiempo Real
