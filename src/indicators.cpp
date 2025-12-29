@@ -1,5 +1,6 @@
 #include "indicators.h"
 
+/// @brief Calculates the Simple Moving Average (SMA) of the input data over a specified window.
 std::vector<double> compute_sma(const std::vector<double>& input, const int& window) {
     const size_t size = input.size();
     constexpr double nan = std::numeric_limits<double>::quiet_NaN();
@@ -20,6 +21,7 @@ std::vector<double> compute_sma(const std::vector<double>& input, const int& win
     return result;
 }
 
+/// @brief Calculates the Exponential Moving Average (EMA) of the input data over a specified window.
 std::vector<double> compute_ema(const std::vector<double>& input, const int& window) {
     const size_t size = input.size();
     std::vector<double> result(size);
@@ -38,6 +40,7 @@ std::vector<double> compute_ema(const std::vector<double>& input, const int& win
     return result;
 }
 
+/// @brief Calculates the Relative Strength Index (RSI) of the input data over a specified window.
 std::vector<double> compute_rsi(const std::vector<double>& input, const int& window) {
     size_t size = input.size();
     std::vector<double> rsi(size, std::numeric_limits<double>::quiet_NaN());
@@ -72,13 +75,10 @@ std::vector<double> compute_rsi(const std::vector<double>& input, const int& win
 }
 
 
-/**
- * Calculates Bollinger Bands using a single-pass variance algorithm.
- * Returns a tuple: <Upper Band, Middle Band (SMA), Lower Band>
- */
+/// @brief Calculates the Bollinger Bands of the input data over a specified window.
 std::tuple<std::vector<double>, std::vector<double>, std::vector<double>> 
-compute_bollinger_bands(const std::vector<double>& input_data, const int& window, const double& k) {
-    const ssize_t size = input_data.size();
+compute_bollinger_bands(const std::vector<double>& input, const int& window, const double& k) {
+    const ssize_t size = input.size();
 
     constexpr double nan = std::numeric_limits<double>::quiet_NaN();
     auto upper_arr = std::vector<double>(size, nan);
@@ -94,8 +94,8 @@ compute_bollinger_bands(const std::vector<double>& input_data, const int& window
 
     // Initial window
     for (ssize_t i = 0; i < window; ++i) {
-        sum += input_data[i];
-        sum_sq += input_data[i] * input_data[i];
+        sum += input[i];
+        sum_sq += input[i] * input[i];
     }
 
     auto compute_bands = [&](ssize_t idx, double current_sum, double current_sum_sq) {
@@ -113,18 +113,15 @@ compute_bollinger_bands(const std::vector<double>& input_data, const int& window
 
     // Sliding window logic
     for (ssize_t i = window; i < size; ++i) {
-        sum += input_data[i] - input_data[i - window];
-        sum_sq += (input_data[i] * input_data[i]) - (input_data[i - window] * input_data[i - window]);
+        sum += input[i] - input[i - window];
+        sum_sq += (input[i] * input[i]) - (input[i - window] * input[i - window]);
         compute_bands(i, sum, sum_sq);
     }
 
     return std::make_tuple(upper_arr, mid_arr, lower_arr);
 }
 
-/**
- * Calculates MACD: Fast EMA, Slow EMA, and the Signal Line.
- * Returns <MACD Line, Signal Line>
- */
+/// @brief Calculates the Moving Average Convergence Divergence (MACD) of the input data.
 std::tuple<std::vector<double>, std::vector<double>> 
 compute_macd(const std::vector<double>& input, 
              const int& fast_period, 
@@ -168,6 +165,8 @@ compute_macd(const std::vector<double>& input,
     return {macd_line, signal_line};
 }
 
+// Logic and Strategy
+/// @brief Checks trading signals based on RSI and Bollinger Bands.
 int compute_signals(const std::vector<double>& rsi, const std::vector<double>& price,
                     const std::vector<double>& bb_upper, const std::vector<double>& bb_lower) {
     if (rsi.empty() || std::isnan(rsi.back())) return 0;

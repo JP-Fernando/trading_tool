@@ -87,3 +87,8 @@ src/build/
 # IDE and Project specific
 *.swp
 .python-version
+
+# Doxygen outputs
+html/
+latex/
+doxygen_sqlite.db
