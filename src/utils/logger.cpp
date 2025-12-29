@@ -19,7 +19,7 @@ void Logger::log(LogLevel level, const std::string &msg)
     if (callback)
     {
         // Is Python interpreter on?
-        if (Py_IsInitialized)
+        if (Py_IsInitialized())
         {
             try
             {
