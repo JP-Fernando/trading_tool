@@ -8,24 +8,24 @@ from trading_bot import trading_core
 
 def test_market_manager_stress():
     """
-    Verifica que el MarketManager puede procesar ráfagas de datos 
-    sin colapsar y que el Thread Pool responde.
+    Verify that the MarketManager can process bursts of data 
+    without crashing and that the Thread Pool is responsive.    
     """
     num_threads = 4
     manager = trading_core.MarketManager(num_threads)
     symbols = [f"TICKER_{i}" for i in range(10)]
     
     try:
-        # Enviamos 500 ticks por cada uno de los 10 símbolos
+        # Send 500 ticks for each of 10 symbols
         for _ in range(500):
             for symbol in symbols:
                 price = 100.0 + np.random.normal(0, 1)
                 manager.update_tick(symbol, price)
         
-        # Damos un margen para que los hilos terminen
+        # Give threads time to finish
         time.sleep(1)
         
-        # Si llegamos aquí sin crashes (SegFaults), el test pasa
+        # Test passed: No segmentation faults so far
         assert True 
     except Exception as e:
         pytest.fail(f"MarketManager crashed during stress test: {e}")
