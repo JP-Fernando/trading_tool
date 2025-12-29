@@ -64,7 +64,8 @@ trading_tool/
 
 2. Instalar y compilar:
     ```bash
-    pip install -e .
+    chmod +x build.sh
+    ./build.sh Release
     ```
 
 3. Generar documentación (opcional):
@@ -78,11 +79,29 @@ trading_tool/
 
 ### Calidad y validación
 
-El proyecto utiliza `pytest` para asegurar la estabilidad de la integración C++/Python y la concurrencia:
+El proyecto cuenta con una suite de pruebas dividida en dos niveles para garantizar la estabilidad del sistema:
 
-```bash
-pytest tests/
-```
+1. Pruebas de Integración (Python)
+
+    Validan la comunicación entre Python y C++, el correcto funcionamiento de los indicadores y la gestión de hilos:
+
+    ```bash
+    # Instalar dependencias de test
+    pip install -e ".[test]"
+
+    # Ejecutar tests
+    pytest tests/python/
+    ```
+
+2. Pruebas Unitarias (C++ Core)
+
+    Si has compilado en modo Debug y tienes GTest instalado, puedes ejecutar los tests nativos:
+
+    ```bash
+    cd build
+    ctest --output-on-failure
+    ```
+
 
 ---
 
