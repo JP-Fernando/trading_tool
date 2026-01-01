@@ -11,6 +11,7 @@ pybind11_add_module(trading_core
 # Link against our C++ libraries
 target_link_libraries(trading_core PRIVATE 
     core_lib
+    backtest_lib
     utils_lib
     Threads::Threads
 )

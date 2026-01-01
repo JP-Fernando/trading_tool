@@ -121,6 +121,7 @@ endif()
 # ============================================================================
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/backtest
     ${CMAKE_SOURCE_DIR}/include/core
     ${CMAKE_SOURCE_DIR}/include/utils
     ${CMAKE_SOURCE_DIR}/include/strategies
@@ -140,7 +141,7 @@ add_subdirectory(src/utils)
 # add_subdirectory(src/strategies)
 # add_subdirectory(src/execution)
 # add_subdirectory(src/storage)
-# add_subdirectory(src/backtest)
+add_subdirectory(src/backtest)
 
 # Build Python bindings (depends on libraries above)
 add_subdirectory(src)
