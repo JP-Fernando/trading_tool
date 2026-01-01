@@ -88,7 +88,7 @@ cd ${BUILD_DIR}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DPYTHON_EXECUTABLE=$(which python3) \
+    -DPython_EXECUTABLE=$(which python3) \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 if [ $? -eq 0 ]; then
