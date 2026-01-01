@@ -13,17 +13,17 @@ de **C++20** altamente optimizado para el cálculo de indicadores técnicos.
 
 ## 🚀 Características Principales
 
-* **C++20 Core:** Cálculo de indicadores (SMA, EMA, RSI, MACD, Bollinger Bands) 
-implementado con algoritmos de una sola pasada (*single-pass*) y punteros crudos para evitar latencia.
-* **Interoperabilidad:** Integración fluida mediante `pybind11`, 
-permitiendo el paso de arrays de NumPy sin copias innecesarias.
-* **Zero-Copy Integration:** Paso de arrays de NumPy a C++ optimizado para minimizar 
-la latencia en el cálculo de indicadores (RSI, MACD, Bollinger Bands, etc.).
-* **Multithreaded MarketManager:** Procesamiento asíncrono de múltiples 
-activos simultáneamente utilizando un `ThreadPool` nativo en C++.
-* **Thread-Safe Architecture:** Implementación de bloqueos de lectura/escritura 
-(`std::shared_mutex`) para garantizar la integridad de los datos entre hilos.
-* **Ganancia Real:** Rendimiento hasta **5x superior** a las implementaciones estándar basadas puramente en Python/Pandas.
+* **C++20 Core:** Cálculo de indicadores (SMA, EMA, RSI, MACD, Bollinger Bands)
+  implementado con algoritmos de una sola pasada (*single-pass*).
+* **Interoperabilidad:** Integración mediante `pybind11` para pasar arrays de NumPy
+  sin copias innecesarias.
+* **Backtesting orientado a eventos:** `EventQueue`, `BacktestEngine` y
+  `ExecutionEngine` con modelo de slippage configurable.
+* **Multithreaded MarketManager:** Procesamiento asíncrono de múltiples activos
+  con un `ThreadPool` nativo en C++.
+* **Thread-Safe Architecture:** Uso de `std::shared_mutex` y un `Logger` centralizado
+  para integridad entre hilos.
+
 
 ---
 
@@ -32,19 +32,21 @@ activos simultáneamente utilizando un `ThreadPool` nativo en C++.
 ```text
 trading_tool/
 ├── include/
-│   ├── core/      # Cabeceras del motor (MarketManager, Indicators, ThreadPool)
-│   └── utils/             # Utilidades transversales (Logger)
+│   ├── backtest/           # EventQueue, BacktestEngine, ExecutionEngine
+│   ├── core/               # MarketManager, Indicators, ThreadPool, Events
+│   └── utils/              # Logger
 ├── src/
-│   ├── core/      # Implementación C++ de la lógica de negocio
-│   ├── utils/             # Implementación de utilidades
-│   └── bindings.cpp       # Definición de módulos Pybind11
+│   ├── backtest/           # Implementación del motor de backtest en C++
+│   ├── core/               # Implementación C++ de la lógica de negocio
+│   ├── utils/              # Implementación de utilidades
+│   └── bindings.cpp        # Definición de módulos Pybind11
 ├── trading_bot/
-│   ├── engine.py          # Lógica de alto nivel
-│   └── monitor.py         # Monitor de WebSockets en tiempo real (Asyncio)
-├── tests/                 # Suite de tests unitarios e integración (Pytest)
-├── docs/                  # Documentación generada (Doxygen)
-├── setup.py               # Compilación de la extensión C++
-└── README.md
+│   ├── engine.py           # Lógica de alto nivel y backtest en Python
+│   ├── monitor.py          # Monitor de WebSockets en tiempo real (asyncio)
+│   └── trading_tool.py     # Atajos para eventos/backtest desde Python
+├── tests/                  # Suite de tests (Pytest)
+├── build.sh                # Script de compilación C++ + pybind11
+├── setup.py                # Configuración de instalación
 ```
 
 ---
@@ -62,13 +64,18 @@ trading_tool/
     cd trading_tool
     ```
 
-2. Instalar y compilar:
+2. Instalar dependencias:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3. Compilar la extensión C++:
     ```bash
     chmod +x build.sh
     ./build.sh Release
     ```
 
-3. Generar documentación (opcional):
+4. Generar documentación (opcional):
     ```bash
     doxygen Doxyfile
     ```
@@ -77,20 +84,31 @@ trading_tool/
 
 ## Uso básico
 
+### Cálculo de indicadores en Python
+
+```python
+import numpy as np
+from trading_bot import trading_core
+
+prices = np.array([100, 101, 102, 99, 98, 105], dtype=np.float64)
+sma = trading_core.calculate_sma(prices, 3)
+ema = trading_core.calculate_ema(prices, 3)
+```
+
 ### Calidad y validación
 
 El proyecto cuenta con una suite de pruebas dividida en dos niveles para garantizar la estabilidad del sistema:
 
 1. Pruebas de Integración (Python)
 
-    Validan la comunicación entre Python y C++, el correcto funcionamiento de los indicadores y la gestión de hilos:
+    Validan la comunicación entre Python y C++, indicadores, backtesting y concurrencia:
 
     ```bash
     # Instalar dependencias de test
     pip install -e ".[test]"
 
     # Ejecutar tests
-    pytest tests/python/
+    pytest 
     ```
 
 2. Pruebas Unitarias (C++ Core)
@@ -107,7 +125,7 @@ El proyecto cuenta con una suite de pruebas dividida en dos niveles para garanti
 
 ### Uso del Monitor en Tiempo Real
 
-El script `monitor.py` utiliza `ccxt.pro` para conectar con 
+El script `monitor.py` utiliza `ccxt.pro` para conectar con
 WebSockets de exchanges y delegar el análisis al núcleo de C++:
 
 ```python
@@ -124,7 +142,6 @@ async def main():
 
 ## Roadmap
 
-- [  ] **Backtesting Engine:** Motor de ejecución de órdenes simuladas con gestión de slippage.
 - [  ] **Persistent Storage:** Base de datos de alta velocidad para ticks (TimeScaleDB/InfluxDB).
 - [  ] **Advanced Indicators:** Implementación de Ichimoku Cloud y ADX en C++.
 - [  ] **Execution Module:** Integración con APIs de trading para ejecución de órdenes.
